@@ -28,9 +28,26 @@ extension View {
             .background(RS.card, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 
-    /// A bar behind the status bar so scrolled content doesn't run under the clock.
+    /// The page colour runs under the status bar as one surface. Scrolled content fades out under the clock:
+    /// the native soft edge on iOS 26, a short page-colour gradient before that.
+    @ViewBuilder
     func rsStatusBarScrim() -> some View {
-        self.safeAreaInset(edge: .top, spacing: 0) { Color.clear.frame(height: 0).background(.bar) }
+        if #available(iOS 26, *) {
+            self.background(RS.bg.ignoresSafeArea())
+                .scrollEdgeEffectStyle(.soft, for: .top)
+        } else {
+            self.background(RS.bg.ignoresSafeArea())
+                .overlay(alignment: .top) {
+                    GeometryReader { g in
+                        LinearGradient(stops: [.init(color: RS.bg, location: 0), .init(color: RS.bg, location: 0.6),
+                                               .init(color: RS.bg.opacity(0), location: 1)],
+                                       startPoint: .top, endPoint: .bottom)
+                            .frame(height: g.safeAreaInsets.top + 18)
+                            .offset(y: -g.safeAreaInsets.top)
+                    }
+                    .allowsHitTesting(false)
+                }
+        }
     }
 
     /// Before iOS 26 the tab bar is clear over the map, so pins draw through it. Give it a bar there.
