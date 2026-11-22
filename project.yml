@@ -20,6 +20,9 @@ targets:
       - path: Tiles/tiles
         type: folder
         buildPhase: resources
+      - path: More/more
+        type: folder
+        buildPhase: resources
     dependencies:
       - target: RunsheetWidgets
         embed: true

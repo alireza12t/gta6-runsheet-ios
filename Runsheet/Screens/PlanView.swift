@@ -3,6 +3,7 @@ import SwiftUI
 struct PlanView: View {
     @Environment(Store.self) private var store
     @State private var showAbout = Launch.args.contains("-RSAbout")
+    @State private var showPicker = Launch.args.contains("-RSPicker")
 
     var body: some View {
         @Bindable var store = store
@@ -42,13 +43,9 @@ struct PlanView: View {
                     SectionLabel("How long can you play?")
                     SegPicker(selection: $store.state.mins, options: [20, 40, 60, 90], title: { "\($0)" }, subtitle: { _ in "min" })
                     SectionLabel("Collect tonight").padding(.top, 4)
-                    FlowLayout(spacing: 8) {
-                        ForEach(data.collectibleCats) { c in
-                            Chip(title: c.name, color: RS.color(c.id), count: "\(c.count - store.foundCount(c.id))",
-                                 on: store.state.routeCat == c.id) {
-                                withAnimation(.spring(duration: 0.35)) { store.state.routeCat = c.id }
-                            }
-                        }
+                    CategoryPickerButton(cat: store.state.routeCat, name: data.catName(store.state.routeCat),
+                                         meta: "\(data.places(in: store.state.routeCat).count - store.foundCount(store.state.routeCat)) left") {
+                        showPicker = true
                     }
                     .sensoryFeedback(.selection, trigger: store.state.routeCat)
                 }
@@ -96,6 +93,12 @@ struct PlanView: View {
         .background(RS.bg)
         .rsStatusBarScrim()
         .sheet(isPresented: $showAbout) { AboutView() }
+        .sheet(isPresented: $showPicker) {
+            CategoryPickerSheet(title: "Collect tonight", cats: data.collectibleCats, selected: store.state.routeCat,
+                                meta: { "\($0.count - store.foundCount($0.id)) left" }) { id in
+                withAnimation(.spring(duration: 0.35)) { store.state.routeCat = id }
+            }
+        }
     }
 
     private var header: some View {

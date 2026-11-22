@@ -9,6 +9,7 @@ struct MapScreen: View {
     @State private var query = ""
     @FocusState private var searching: Bool
     @State private var visibleCount = 0
+    @State private var showFilters = Launch.args.contains("-RSFilters")
     private var tiles: TileStore { TileStore.shared }
 
     var body: some View {
@@ -18,9 +19,9 @@ struct MapScreen: View {
         GeometryReader { g in
             ZStack {
                 MapCanvas(camera: camera, routeDraw: 1, data: data,
-                          pins: grouped.pins.map { MapPin(id: $0.id, point: $0.point, color: RS.color($0.cat), found: store.isFound($0.id)) },
+                          pins: grouped.pins.map { MapPin(id: $0.id, cat: $0.cat, point: $0.point, color: RS.color($0.cat), found: store.isFound($0.id)) },
                           clusters: grouped.clusters,
-                          waypoint: store.state.waypoint.flatMap { data.placeByID[$0]?.point },
+                          waypoint: store.state.waypoint.flatMap { data.placeByID[$0]?.point ?? MoreStore.shared.byID[$0]?.point },
                           selected: selected?.id,
                           hideLabelKinds: store.state.mapCats.contains("landmark") ? ["poi"] : [],
                           tileVersion: tiles.version)
@@ -45,6 +46,7 @@ struct MapScreen: View {
                 .padding(.leading, 10).padding(.bottom, 2)
                 .allowsHitTesting(false)
         }
+        .sheet(isPresented: $showFilters) { FiltersSheet().presentationDetents([.medium, .large]) }
         .sheet(item: $selected) { p in
             PlaceSheet(place: p, onNext: { next in open(next, zoom: true) })
                 .presentationDetents([.height(360), .large])
@@ -85,16 +87,47 @@ struct MapScreen: View {
     }
 
     private func chips(_ data: GameData) -> some View {
-        ScrollView(.horizontal, showsIndicators: false) {
+        let on = data.cats.filter { store.state.mapCats.contains($0.id) }
+        return ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
+                Button { showFilters = true } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "line.3.horizontal.decrease")
+                        Text("Filters")
+                        if !on.isEmpty {
+                            Text("\(on.count)").font(.mono(12, .bold)).foregroundStyle(RS.onAccent)
+                                .padding(.horizontal, 6).padding(.vertical, 2).background(RS.accentFill, in: Capsule())
+                        }
+                    }
+                    .font(.system(size: 14, weight: .semibold)).foregroundStyle(RS.text)
+                    .padding(.horizontal, 12).frame(height: 36)
+                    .background(Capsule().fill(RS.card))
+                    .overlay(Capsule().strokeBorder(RS.line))
+                    .contentShape(Capsule())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Filters, \(on.count) on")
                 Chip(title: "Hide found", on: store.state.hideFound, glass: true) {
                     withAnimation { store.state.hideFound.toggle() }
                 }
-                ForEach(data.cats) { c in
-                    Chip(title: c.name, color: RS.color(c.id), count: "\(c.count)", on: store.state.mapCats.contains(c.id), glass: true) {
-                        if let i = store.state.mapCats.firstIndex(of: c.id) { store.state.mapCats.remove(at: i) }
-                        else { store.state.mapCats.append(c.id) }
+                ForEach(on) { c in
+                    Button {
+                        withAnimation(.spring(duration: 0.3)) { store.state.mapCats.removeAll { $0 == c.id } }
+                    } label: {
+                        HStack(spacing: 6) {
+                            Circle().fill(RS.color(c.id)).frame(width: 9, height: 9)
+                            Text(c.name).font(.system(size: 14, weight: .medium))
+                            Image(systemName: "xmark").font(.system(size: 10, weight: .bold)).foregroundStyle(RS.text2)
+                        }
+                        .foregroundStyle(RS.text)
+                        .padding(.horizontal, 12).frame(height: 36)
+                        .background { Capsule().fill(RS.card); Capsule().fill(RS.accent.opacity(0.14)) }
+                        .overlay(Capsule().strokeBorder(RS.accent, lineWidth: 1.5))
+                        .contentShape(Capsule())
                     }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Hide \(c.name)")
+                    .transition(.scale.combined(with: .opacity))
                 }
             }
             .padding(.horizontal, 16).padding(.vertical, 2)
@@ -181,7 +214,14 @@ struct MapScreen: View {
 
     private func shownPlaces(_ data: GameData) -> [Place] {
         let cats = Set(store.state.mapCats)
-        return data.places.filter { cats.contains($0.cat) && !(store.state.hideFound && store.isFound($0.id)) }
+        var pool = data.places
+        // buildings: only the squares on screen, and only from zoom 2
+        if !cats.isDisjoint(with: MoreStore.cats), camera.zoom >= 2, size.width > 0 {
+            let a = camera.toMap(CGPoint(x: -size.width * 0.2, y: -size.height * 0.2))
+            let b = camera.toMap(CGPoint(x: size.width * 1.2, y: size.height * 1.2))
+            pool += MoreStore.shared.places(in: CGRect(x: a.x, y: a.y, width: b.x - a.x, height: b.y - a.y))
+        }
+        return pool.filter { cats.contains($0.cat) && !(store.state.hideFound && store.isFound($0.id)) }
     }
 
     private func fitIfNeeded() {
@@ -282,8 +322,8 @@ struct PlaceSheet: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
                 VStack(alignment: .leading, spacing: 5) {
-                    HStack(spacing: 6) {
-                        Circle().fill(RS.color(cat)).frame(width: 9, height: 9)
+                    HStack(spacing: 8) {
+                        CategoryBadge(cat: cat, size: 24)
                         SectionLabel(data.catName(cat) + (place.ch.map { " · Chapter \($0)" } ?? ""), color: RS.accentText)
                         Spacer()
                         if tracked {

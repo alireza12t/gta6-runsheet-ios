@@ -226,3 +226,43 @@ extension Place {
 
 /// The map art is 2560 x 3313, and positions are shares of it, so y is stretched by this much.
 let mapAspect: CGFloat = 3313.0 / 2560.0
+
+/// Buildings and structures (about 3,200) come in map squares (Resources/more), read only while on screen.
+@MainActor
+final class MoreStore {
+    static let shared = MoreStore()
+    static let cats: Set<String> = ["building", "structure"]
+    private struct Index: Decodable { let grid: Int; let chunks: [String: Int] }
+    private let index: Index?
+    private var chunks: [String: [Place]] = [:]
+    private(set) var byID: [String: Place] = [:]
+    private let root = Bundle.main.resourceURL?.appendingPathComponent("more")
+
+    init() {
+        index = Bundle.main.url(forResource: "more", withExtension: "json")
+            .flatMap { try? Data(contentsOf: $0) }.flatMap { try? JSONDecoder().decode(Index.self, from: $0) }
+    }
+
+    /// Places in the squares that touch this map rect.
+    func places(in r: CGRect) -> [Place] {
+        guard let index, let root else { return [] }
+        let g = Double(index.grid)
+        let i0 = max(0, Int(floor(r.minX * g))), i1 = min(index.grid - 1, Int(floor(r.maxX * g)))
+        let j0 = max(0, Int(floor(r.minY * g))), j1 = min(index.grid - 1, Int(floor(r.maxY * g)))
+        guard i0 <= i1, j0 <= j1 else { return [] }
+        var out: [Place] = []
+        for i in i0...i1 {
+            for j in j0...j1 {
+                let k = "\(i)_\(j)"
+                guard index.chunks[k] != nil else { continue }
+                if chunks[k] == nil {
+                    let ps = (try? JSONDecoder().decode([Place].self, from: Data(contentsOf: root.appendingPathComponent("\(k).json")))) ?? []
+                    chunks[k] = ps
+                    for p in ps { byID[p.id] = p }
+                }
+                out += chunks[k] ?? []
+            }
+        }
+        return out
+    }
+}

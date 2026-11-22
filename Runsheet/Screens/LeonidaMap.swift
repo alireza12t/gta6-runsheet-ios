@@ -97,6 +97,7 @@ final class TileStore {
 
 struct MapPin: Equatable {
     let id: String
+    let cat: String
     let point: CGPoint
     let color: Color
     let found: Bool
@@ -251,8 +252,9 @@ struct MapCanvas: View, Animatable {
                 ctx.draw(Text("\(c.count)").font(.system(size: 13, weight: .bold, design: .rounded)).foregroundStyle(.white), at: s)
             }
 
-            // pins
-            let pinR: CGFloat = zoom > 2.5 ? 8 : 7
+            // pins: a coloured disc with the category icon
+            let pinR: CGFloat = zoom > 2.5 ? 12 : 10
+            var icons: [String: GraphicsContext.ResolvedImage] = [:]
             for pin in pins {
                 let s = cam.toScreen(pin.point)
                 guard s.x > -20, s.x < size.width + 20, s.y > -20, s.y < size.height + 20 else { continue }
@@ -263,12 +265,15 @@ struct MapCanvas: View, Animatable {
                 c.opacity = pin.found ? 0.55 : 1
                 c.fill(Path(ellipseIn: rect.insetBy(dx: -2, dy: -2)), with: .color(.white))
                 c.fill(Path(ellipseIn: rect), with: .color(pin.color))
-                if pin.found {
-                    var tick = Path()
-                    tick.move(to: CGPoint(x: s.x - r * 0.45, y: s.y))
-                    tick.addLine(to: CGPoint(x: s.x - r * 0.1, y: s.y + r * 0.38))
-                    tick.addLine(to: CGPoint(x: s.x + r * 0.5, y: s.y - r * 0.4))
-                    c.stroke(tick, with: .color(.white), style: StrokeStyle(lineWidth: 1.8, lineCap: .round, lineJoin: .round))
+                let symbol = pin.found ? "checkmark" : CatIcon.name(pin.cat)
+                if icons[symbol] == nil {
+                    var img = ctx.resolve(Image(systemName: symbol))
+                    img.shading = .color(.white)
+                    icons[symbol] = img
+                }
+                if let img = icons[symbol] {
+                    let isz = img.size, k = (r * 1.05) / max(isz.width, isz.height)
+                    c.draw(img, in: CGRect(x: s.x - isz.width * k / 2, y: s.y - isz.height * k / 2, width: isz.width * k, height: isz.height * k))
                 }
                 if sel { ctx.stroke(Path(ellipseIn: rect.insetBy(dx: -6, dy: -6)), with: .color(.white), lineWidth: 3) }
             }

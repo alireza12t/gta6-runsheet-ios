@@ -61,9 +61,9 @@ struct GuideView: View {
                     store.tab = .checklist
                 } label: {
                     HStack(spacing: 12) {
-                        Circle().fill(RS.color(c.id)).frame(width: 9, height: 9)
+                        CategoryBadge(cat: c.id, size: 26)
                         Text(c.name).font(.system(size: 16, weight: .medium)).foregroundStyle(RS.text)
-                            .frame(width: 130, alignment: .leading).lineLimit(1)
+                            .frame(width: 118, alignment: .leading).lineLimit(1).minimumScaleFactor(0.85)
                         ProgressBar(fraction: Double(f) / Double(max(1, c.count)), height: 5)
                         HStack(spacing: 0) {
                             Text("\(f)").font(.mono(14, .semibold)).foregroundStyle(RS.text)

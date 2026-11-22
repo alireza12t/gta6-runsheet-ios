@@ -5,6 +5,7 @@ struct ChecklistView: View {
     @State private var foundTick = 0
     @State private var order: [String] = []     // sort frozen while you tick, so rows stay under your finger
     @State private var orderCat = ""
+    @State private var showPicker = false
 
     var body: some View {
         let data = store.data!
@@ -17,21 +18,7 @@ struct ChecklistView: View {
             Group {
                 Text("Checklist").font(.system(size: 32, weight: .bold)).foregroundStyle(RS.text)
                     .padding(.horizontal, 4).padding(.top, 8)
-                ScrollViewReader { proxy in
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(cats) { c in
-                                Chip(title: c.name, color: RS.color(c.id), on: c.id == cat) {
-                                    withAnimation(.spring(duration: 0.35)) { store.checklistCat = c.id }
-                                }
-                                .id(c.id)
-                            }
-                        }
-                        .padding(.vertical, 2)
-                    }
-                    .onAppear { proxy.scrollTo(cat, anchor: .center) }
-                    .onChange(of: cat) { _, c in withAnimation { proxy.scrollTo(c, anchor: .center) } }
-                }
+                CategoryPickerButton(cat: cat, name: data.catName(cat), meta: "\(f)/\(n) found") { showPicker = true }
                 VStack(alignment: .leading, spacing: 12) {
                     HStack(alignment: .firstTextBaseline) {
                         SectionLabel(data.catName(cat))
@@ -90,6 +77,12 @@ struct ChecklistView: View {
         .rsStatusBarScrim()
         .contentMargins(.horizontal, 16, for: .scrollContent)
         .sensoryFeedback(trigger: foundTick) { _, _ in .success }
+        .sheet(isPresented: $showPicker) {
+            CategoryPickerSheet(title: "Checklist", cats: cats, selected: cat,
+                                meta: { "\(store.foundCount($0.id))/\($0.count) found" }) { id in
+                withAnimation(.spring(duration: 0.35)) { store.checklistCat = id }
+            }
+        }
         .onAppear { freeze(data, cat) }
         .onChange(of: cat) { _, c in freeze(data, c) }
     }
