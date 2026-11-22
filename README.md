@@ -34,9 +34,9 @@ Loading screen:
 ## What it does
 - **Plan.** Pick chapter, Jason or Lucia, day or night, and 20 to 90 minutes. The live board shows what's open right now, like a departure board: blue is live now, amber is closing, green is ready, grey is money. Each line shows how many sources agree.
 - **Run.** A route through the nearest unfound places (nearest neighbour, then 2-opt, measured at true map scale), drawn on the map as it starts. The finish card counts done and skipped stops. Done and Skip move you along, with haptics. The Live Activity and Dynamic Island show the next stop and a progress line.
-- **Map.** The game's map art as tiles, with our own area borders and labels on top, drawn with SwiftUI Canvas. Pinch, pan, double tap. Close pins group into numbered bubbles when zoomed out. Tap a pin for details, the next nearest unfound spot, waypoint and mark found, or route whatever is on screen (up to 60 stops).
+- **Map.** The game's map art as tiles, with our own area borders and labels on top, drawn with SwiftUI Canvas. Pinch, pan, double tap. Pins carry category icons and close ones group into numbered bubbles when zoomed out. A Filters panel turns categories on by group, and about 3,200 buildings load square by square as you zoom in. Tap a pin for details, the next nearest unfound spot, waypoint and mark found, or route whatever is on screen (up to 60 stops).
 - **Guide.** Collectible progress, missions by chapter, Strangers & Freaks, money rules and ways to earn, cheats and trophies.
-- **Checklist.** Every collectible and money spot by category. Swipe right to mark found, swipe left to see it on the map.
+- **Checklist.** Every collectible and money spot, picked from a grouped category list. Swipe right to mark found, swipe left to see it on the map.
 
 ## Build it
 Needs Xcode 26 or newer. The app runs on iOS 18 and up. On iOS 26 it uses native Liquid Glass (`glassEffect`, glass tab bar and buttons); on iOS 18 it falls back to materials.

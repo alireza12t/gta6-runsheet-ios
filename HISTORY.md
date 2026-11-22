@@ -21,6 +21,14 @@ Native SwiftUI version of the Runsheet web app (`GTA6-Guide/app`). Repo: https:/
 - Signing team 58WM5RF23G set in `project.yml`. Built and installed on Alireza's iPhone 17 Pro with `devicectl`.
 - Unit tests were not re-run after this update (simulator kept off to save RAM). README screenshots for Plan, Guide, Checklist and dark mode are from before the map change.
 
+## Update 2, Nov 22 night (rest of the web commits)
+- Pins carry their category icon (SF Symbols standing in for the web's drawn icons, map in `CategoryUI.swift`). Found pins show a tick.
+- Buildings and structures (about 3,200, `More/more/`, from the web's `data/more/`) load per map square, only while on screen and from zoom 2.
+- Map Filters: a Filters button opens a grouped panel with switches, found counts, Show all / Hide all per group, Clear all and Hide found. The row shows what's on as removable chips.
+- Plan "Collect tonight" and the Checklist use one category button that opens a grouped picker. Guide rows have icons.
+- Pin card has the category icon in its header. Photos from the web pin card are still not ported.
+- 6 unit tests pass. Installed on Alireza's iPhone 17 Pro.
+
 ## Decisions made
 - **Loading screen** reuses the gta6-countdown animation (SVG path parser, neon trace, colour rising from the bottom, LOADING percent), but traces our Leonida outline and a route line. The countdown drew the GTA VI logo, which is Rockstar's trademark, and the brief says no Rockstar logos. To go back to the logo, copy `GTALogo.swift` and `LogoData.swift` from gta6-countdown, but that brings a trademark into a public repo.
 - **Storage** is one JSON file (`Application Support/Runsheet/state.json`), not SwiftData. It's small and easy to migrate. Missing fields fall back to defaults, and a bad file is moved aside, never deleted.
@@ -33,7 +41,8 @@ Native SwiftUI version of the Runsheet web app (`GTA6-Guide/app`). Repo: https:/
 - [ ] Not tapped through yet: "Route what's on screen" and the run complete card. Both build fine and use the same code as the Plan run.
 - [ ] Search matches place names only, like the web app. Searching a category name ("mural") finds nothing.
 - [ ] Re-run the unit tests and retake the README screenshots with the new map.
-- [ ] Port the buildings layer (`data/more/`) and place photos if wanted.
+- [ ] Port place photos (the web loads them from gta6tracker.org) if wanted.
+- [ ] The web's pin lift on hover isn't ported (no hover on iPhone). The tapped pin grows and gets a ring instead.
 - [ ] **Liquid Glass not seen yet in a screenshot** (it should show on the iPhone 17 Pro). Only iOS 18 simulator runtimes exist on this Mac (runtimes stay uninstalled on purpose), so the screenshots show the material fallback. Run it once on an iOS 26 device or simulator and check the glass search bar, map buttons, chips and run card.
 - [ ] Dynamic Island layouts are written but not screenshotted. The iPhone 16 Pro simulator shows the lock screen version only while locked.
 - [ ] Run sizes are stop counts, not timed drives, same as the web app.
