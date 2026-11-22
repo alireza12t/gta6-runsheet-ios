@@ -5,6 +5,15 @@ struct AboutView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var confirmReset = false
 
+    static let socials: [(String, String, String)] = [
+        ("Website", "https://alireza12t.github.io/", "globe"),
+        ("GitHub", "https://github.com/alireza12t", "chevron.left.forwardslash.chevron.right"),
+        ("X", "https://x.com/DevMvRick", "at"),
+        ("YouTube", "https://www.youtube.com/@DevMvRick", "play.rectangle"),
+        ("Instagram", "https://www.instagram.com/devmvrick", "camera"),
+        ("LinkedIn", "https://www.linkedin.com/in/alireza12t", "person.crop.square"),
+    ]
+
     private var version: String {
         let v = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0.0"
         return v
@@ -32,11 +41,21 @@ struct AboutView: View {
                     Label("Everything stays on this iPhone. No account, no server, no tracking.", systemImage: "lock.iphone")
                     Button("Reset my progress", role: .destructive) { confirmReset = true }
                 }
+                Section("Made by Alireza Toghiani") {
+                    ForEach(Self.socials, id: \.0) { name, url, symbol in
+                        Link(destination: URL(string: url)!) {
+                            LabeledContent { Image(systemName: "arrow.up.right").font(.system(size: 12, weight: .semibold)) } label: {
+                                Label(name, systemImage: symbol)
+                            }
+                        }
+                    }
+                }
                 Section("Open source") {
                     Link(destination: URL(string: "https://github.com/alireza12t/gta6-runsheet-ios")!) {
                         Label("github.com/alireza12t/gta6-runsheet-ios", systemImage: "chevron.left.forwardslash.chevron.right")
                     }
-                    Link(destination: URL(string: "https://alireza12t.github.io/gta6-runsheet/")!) { Label("Web version", systemImage: "globe") }
+                    Link(destination: URL(string: "https://alireza12t.github.io/gta6-runsheet/")!) { Label("Web version", systemImage: "safari") }
+                    Link(destination: URL(string: "https://github.com/alireza12t/gta6-runsheet")!) { Label("Web version source", systemImage: "doc.text") }
                     Text("App code is MIT licensed. The loading animation is adapted from gta6-countdown by the same author.")
                 }
                 Section {

@@ -2,7 +2,12 @@
 
 An unofficial GTA VI companion, built natively in SwiftUI. Plan a session from your chapter, character, in-game time and how long you can play, find what's left on a map of 574 places, and run it stop by stop with a Live Activity on your lock screen.
 
-It's the native version of the [Runsheet web app](https://alireza12t.github.io/gta6-runsheet/). All your progress stays on your iPhone. No account, no server.
+It's the native version of the Runsheet web app. All your progress stays on your iPhone. No account, no server.
+
+- **Web version:** https://alireza12t.github.io/gta6-runsheet/
+- **Web version source:** https://github.com/alireza12t/gta6-runsheet
+
+Made by **Alireza Toghiani**.
 
 > Not affiliated with Rockstar Games or Take-Two Interactive. This is a fan-made guide with no Rockstar art, logos or fonts.
 
@@ -74,6 +79,18 @@ Progress is a single JSON file in Application Support. If it can't be read, the 
 - **The map outline** is our own schematic drawing, not Rockstar's map.
 - **The loading animation** is adapted from [gta6-countdown](https://github.com/alireza12t/gta6-countdown) (MIT). It traces the Leonida outline instead of the game's logo.
 - Design inspired by Flighty's departure-board layout. No Flighty assets are used.
+
+## Made by
+**Alireza Toghiani**
+
+- Website: https://alireza12t.github.io/
+- GitHub: [@alireza12t](https://github.com/alireza12t)
+- X: [@DevMvRick](https://x.com/DevMvRick)
+- YouTube: [@DevMvRick](https://www.youtube.com/@DevMvRick)
+- Instagram: [@devmvrick](https://www.instagram.com/devmvrick)
+- LinkedIn: [alireza12t](https://www.linkedin.com/in/alireza12t)
+
+If you find a wrong location or a missing item, open an issue.
 
 ## License
 The app code is MIT licensed, see [LICENSE](LICENSE). The location data in `places.json` is CC BY-SA, from the GTA Wiki via gta6tracker.org.
