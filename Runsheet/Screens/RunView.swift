@@ -30,14 +30,15 @@ struct RunView: View {
         .overlay(alignment: .top) { topButtons }
         .overlay(alignment: .bottom) {
             Group {
-                if run.isComplete { completeCard(run) } else { card(run) }
+                if run.total == 0 { EmptyView() }   // run just ended, cover is closing
+                else if run.isComplete { completeCard(run) } else { card(run) }
             }
             .padding(.horizontal, 10).padding(.bottom, 6)
         }
         .background(RS.sea)
         .sensoryFeedback(.success, trigger: doneTick)
         .sensoryFeedback(.impact(weight: .light), trigger: skipTick)
-        .sensoryFeedback(trigger: run.isComplete) { _, new in new ? .success : nil }
+        .sensoryFeedback(trigger: run.isComplete) { _, new in new && run.total > 0 ? .success : nil }
     }
 
     private var topButtons: some View {

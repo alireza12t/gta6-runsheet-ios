@@ -34,6 +34,7 @@ final class Store {
         self.state = persist ? Store.readState(at: self.fileURL) : AppState()
         // The bundled data is small (about 140 KB), so read it right away.
         do { data = try GameData.loadBundled() } catch { loadError = String(describing: error) }
+        if persist { syncLiveActivity() }  // match the lock screen to the saved run at launch
     }
 
     func setData(_ d: GameData) { data = d }
@@ -171,9 +172,16 @@ final class Store {
 
     // MARK: live activity
 
+    @ObservationIgnored private var liveTask: Task<Void, Never>?
+
+    /// Syncs run one after another and each reads the latest run, so a stale update can't win.
     private func syncLiveActivity() {
-        let run = state.run
-        Task { await LiveRun.sync(run) }
+        let previous = liveTask
+        liveTask = Task { [weak self] in
+            await previous?.value
+            guard let self else { return }
+            await LiveRun.sync(self.state.run)
+        }
     }
 }
 

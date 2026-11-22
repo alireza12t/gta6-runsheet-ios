@@ -2,7 +2,7 @@ import SwiftUI
 
 struct PlanView: View {
     @Environment(Store.self) private var store
-    @State private var showAbout = false
+    @State private var showAbout = Launch.args.contains("-RSAbout")
 
     var body: some View {
         @Bindable var store = store

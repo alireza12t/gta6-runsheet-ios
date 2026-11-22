@@ -51,6 +51,23 @@ struct DataTests {
         #expect(Set(t.map { "\($0)" }).count == pts.count)
     }
 
+    @Test func progressSurvivesRelaunch() throws {
+        let f = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".json")
+        let a = Store(persist: true, fileURL: f)
+        let id = try #require(a.data?.places.first?.id)
+        a.toggleFound(id)
+        a.state.waypoint = id
+        a.state.chapter = 3
+        a.buildRun()
+        a.advanceRun(markDone: false)
+        let b = Store(persist: true, fileURL: f)
+        #expect(b.isFound(id))
+        #expect(b.state.waypoint == id)
+        #expect(b.state.chapter == 3)
+        #expect(b.state.run == a.state.run)
+        #expect(b.state.run?.idx == 1)
+    }
+
     @Test func unreadableStateIsMovedAside() throws {
         let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
