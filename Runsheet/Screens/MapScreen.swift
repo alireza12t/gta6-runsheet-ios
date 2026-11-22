@@ -9,17 +9,22 @@ struct MapScreen: View {
     @State private var query = ""
     @FocusState private var searching: Bool
     @State private var visibleCount = 0
+    private var tiles: TileStore { TileStore.shared }
 
     var body: some View {
         let data = store.data!
         let shown = shownPlaces(data)
+        let grouped = PinGrouping.group(shown, camera: camera, size: size)
         GeometryReader { g in
             ZStack {
-                MapCanvas(camera: camera, routeDraw: 1, rings: data.rings, regions: data.regions,
-                          pins: shown.map { MapPin(id: $0.id, point: $0.point, color: RS.color($0.cat), found: store.isFound($0.id)) },
+                MapCanvas(camera: camera, routeDraw: 1, data: data,
+                          pins: grouped.pins.map { MapPin(id: $0.id, point: $0.point, color: RS.color($0.cat), found: store.isFound($0.id)) },
+                          clusters: grouped.clusters,
                           waypoint: store.state.waypoint.flatMap { data.placeByID[$0]?.point },
-                          selected: selected?.id)
-                    .modifier(MapGestures(camera: $camera, onTap: { tap($0, shown: shown) }, onMoveEnd: updateVisible))
+                          selected: selected?.id,
+                          hideLabelKinds: store.state.mapCats.contains("landmark") ? ["poi"] : [],
+                          tileVersion: tiles.version)
+                    .modifier(MapGestures(camera: $camera, onTap: { tap($0, pins: grouped.pins, clusters: grouped.clusters) }, onMoveEnd: updateVisible))
                     .ignoresSafeArea()
             }
             .onAppear { size = g.size; fitIfNeeded(); focusIfNeeded() }
@@ -33,11 +38,18 @@ struct MapScreen: View {
         .onChange(of: store.state.mapCats) { _, _ in updateVisible() }
         .onChange(of: store.state.hideFound) { _, _ in updateVisible() }
         .onChange(of: store.state.found) { _, _ in updateVisible() }
+        .overlay(alignment: .bottomLeading) {
+            Text("Map: Rockstar via GTA Wiki · Pins: gta6tracker.org")
+                .font(.system(size: 9, weight: .medium)).foregroundStyle(.white.opacity(0.85))
+                .shadow(color: .black.opacity(0.6), radius: 1.5)
+                .padding(.leading, 10).padding(.bottom, 2)
+                .allowsHitTesting(false)
+        }
         .sheet(item: $selected) { p in
-            PlaceSheet(place: p)
-                .presentationDetents([.height(300), .medium])
+            PlaceSheet(place: p, onNext: { next in open(next, zoom: true) })
+                .presentationDetents([.height(360), .large])
                 .presentationDragIndicator(.visible)
-                .presentationBackgroundInteraction(.enabled(upThrough: .height(300)))
+                .presentationBackgroundInteraction(.enabled(upThrough: .height(360)))
         }
     }
 
@@ -115,8 +127,11 @@ struct MapScreen: View {
                 if p.id != hits.last?.id { Divider().padding(.leading, 14) }
             }
         }
-        .rsGlass(in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .background(RS.card, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .shadow(color: .black.opacity(0.18), radius: 12, y: 6)
     }
+
+    private var isSearching: Bool { query.trimmingCharacters(in: .whitespaces).count >= 2 }
 
     private func controls(_ data: GameData) -> some View {
         GlassGroup(spacing: 10) {
@@ -132,7 +147,9 @@ struct MapScreen: View {
             }
         }
         .padding(.trailing, 16)
-        .offset(y: 30)
+        .offset(y: selected == nil ? 30 : -170)   // stay above the pin card
+        .opacity(isSearching ? 0 : 1)
+        .animation(.spring(duration: 0.35), value: selected == nil)
     }
 
     private var routeButton: some View {
@@ -141,9 +158,9 @@ struct MapScreen: View {
         } label: {
             HStack(spacing: 8) {
                 Image(systemName: "point.topleft.down.to.point.bottomright.curvepath.fill")
-                Text("Route what's on screen")
+                Text(visibleCount > 60 ? "Route 60 nearest" : "Route what's on screen")
                 if visibleCount > 0 {
-                    Text("\(visibleCount) stops").font(.mono(14, .bold)).foregroundStyle(RS.accentText)
+                    Text("\(min(60, visibleCount)) stops").font(.mono(14, .bold)).foregroundStyle(RS.accentText)
                         .contentTransition(.numericText())
                 }
             }
@@ -170,8 +187,7 @@ struct MapScreen: View {
     private func fitIfNeeded() {
         guard !didFit, size.width > 0 else { return }
         didFit = true
-        camera = MapCamera.fit(CGRect(x: 0.42, y: 0.35, width: 0.46, height: 0.55),
-                               in: CGRect(origin: .zero, size: size).insetBy(dx: 10, dy: 60))
+        camera = MapCamera.fit(MapCamera.island, in: CGRect(x: 12, y: 150, width: size.width - 24, height: size.height - 230))
         updateVisible()
     }
 
@@ -186,7 +202,7 @@ struct MapScreen: View {
         if !store.state.mapCats.contains(p.cat) { store.state.mapCats.append(p.cat) }
         if zoom {
             withAnimation(.spring(duration: 0.7, bounce: 0.1)) {
-                camera = camera.centered(on: p.point, in: size, scale: max(camera.scale, 3200), yBias: 0.32)
+                camera = camera.centered(on: p.point, in: size, scale: max(camera.scale, 4000), yBias: 0.3)
             }
         }
         selected = p
@@ -200,11 +216,22 @@ struct MapScreen: View {
         updateVisible()
     }
 
-    private func tap(_ loc: CGPoint, shown: [Place]) {
+    private func tap(_ loc: CGPoint, pins: [Place], clusters: [MapCluster]) {
         searching = false
+        for c in clusters {
+            let s = camera.toScreen(c.point)
+            if hypot(s.x - loc.x, s.y - loc.y) < PinGrouping.bubbleSize(c.count) / 2 + 6 {
+                let area = CGRect(x: 30, y: 160, width: size.width - 80, height: size.height - 300)
+                withAnimation(.spring(duration: 0.55, bounce: 0.1)) {
+                    camera = MapCamera.fit(c.bounds.insetBy(dx: -0.01, dy: -0.01), in: area, maxScale: 16000)
+                }
+                updateVisible()
+                return
+            }
+        }
         var best: Place?
-        var bestD: CGFloat = 26
-        for p in shown {
+        var bestD: CGFloat = 26   // a bigger tap area than the pin itself
+        for p in pins {
             let s = camera.toScreen(p.point)
             let d = hypot(s.x - loc.x, s.y - loc.y)
             if d < bestD { bestD = d; best = p }
@@ -240,6 +267,7 @@ struct MapScreen: View {
 struct PlaceSheet: View {
     @Environment(Store.self) private var store
     let place: Place
+    var onNext: (Place) -> Void = { _ in }
     @State private var foundTick = 0
 
     var body: some View {
@@ -247,44 +275,86 @@ struct PlaceSheet: View {
         let found = store.isFound(place.id)
         let isWp = store.state.waypoint == place.id
         let cat = place.cat
-        VStack(alignment: .leading, spacing: 14) {
-            VStack(alignment: .leading, spacing: 4) {
-                HStack(spacing: 6) {
-                    Circle().fill(RS.color(cat)).frame(width: 9, height: 9)
-                    SectionLabel(data.catName(cat) + (place.ch.map { " · Chapter \($0)" } ?? ""), color: RS.accentText)
+        let group = data.cats.first { $0.id == cat }?.group ?? ""
+        let tracked = ["collectible", "money", "story"].contains(group)
+        let help = place.desc ?? data.catHelp[cat]
+        let next = tracked ? nearestUnfound(data) : nil
+        ScrollView {
+            VStack(alignment: .leading, spacing: 14) {
+                VStack(alignment: .leading, spacing: 5) {
+                    HStack(spacing: 6) {
+                        Circle().fill(RS.color(cat)).frame(width: 9, height: 9)
+                        SectionLabel(data.catName(cat) + (place.ch.map { " · Chapter \($0)" } ?? ""), color: RS.accentText)
+                        Spacer()
+                        if tracked {
+                            Text("\(store.foundCount(cat)) of \(data.places(in: cat).count) found")
+                                .font(.mono(12)).foregroundStyle(RS.text2).contentTransition(.numericText())
+                        }
+                    }
+                    Text(place.name).font(.system(size: 24, weight: .bold)).foregroundStyle(RS.text)
+                    HStack(spacing: 8) {
+                        if !place.whereText.isEmpty {
+                            Label(place.whereText, systemImage: "mappin.and.ellipse").font(.system(size: 14)).foregroundStyle(RS.text2)
+                        }
+                        if found {
+                            Text("FOUND").font(.mono(10.5, .bold)).foregroundStyle(RS.green)
+                                .padding(.horizontal, 6).padding(.vertical, 3).background(RS.greenBg, in: Capsule())
+                                .transition(.scale.combined(with: .opacity))
+                        }
+                    }
                 }
-                Text(place.name).font(.system(size: 24, weight: .bold)).foregroundStyle(RS.text)
-                if let area = place.area, !area.isEmpty { Text(area).font(.system(size: 15)).foregroundStyle(RS.text2) }
-            }
-            HStack(spacing: 8) {
-                SourceTag(count: place.sources ?? 0)
-                Text(place.source ?? "").font(.system(size: 12)).foregroundStyle(RS.text2)
-            }
-            if found {
-                Label("Found. \(store.foundCount(cat)) of \(data.places(in: cat).count) \(data.catName(cat).lowercased())", systemImage: "checkmark.seal.fill")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(RS.green)
-                    .transition(.scale(scale: 0.8).combined(with: .opacity))
-            }
-            HStack(spacing: 10) {
-                Button(isWp ? "Clear waypoint" : "Set waypoint") {
-                    store.state.waypoint = isWp ? nil : place.id
-                    store.flash(isWp ? "Waypoint cleared" : "Waypoint set")
+                Text(help ?? "No details for this spot yet. The source page may have more.")
+                    .font(.system(size: 15)).foregroundStyle(help == nil ? RS.text3 : RS.text)
+                    .fixedSize(horizontal: false, vertical: true)
+                if let next {
+                    Button { onNext(next) } label: {
+                        HStack {
+                            Text("Next nearest").font(.system(size: 13)).foregroundStyle(RS.text2)
+                            Text(next.name).font(.system(size: 15, weight: .semibold)).foregroundStyle(RS.text).lineLimit(1)
+                            Spacer()
+                            Image(systemName: "chevron.right").font(.system(size: 12, weight: .bold)).foregroundStyle(RS.text3)
+                        }
+                        .padding(.horizontal, 12).frame(minHeight: 44)
+                        .background(RS.fill, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(RSButtonStyle(kind: .secondary))
-                Button {
-                    withAnimation(.spring(duration: 0.4, bounce: 0.4)) { _ = store.toggleFound(place.id) }
-                    foundTick += 1
-                } label: {
-                    Label(found ? "Not found" : "Mark found", systemImage: found ? "arrow.uturn.backward" : "checkmark")
-                        .contentTransition(.symbolEffect(.replace))
+                HStack(spacing: 8) {
+                    SourceTag(count: place.sources ?? 0)
+                    if let slug = place.slug, let url = URL(string: "https://gta6tracker.org/l/" + slug) {
+                        Link("gta6tracker.org", destination: url).font(.system(size: 13, weight: .semibold))
+                    } else {
+                        Text(place.source ?? "").font(.system(size: 12)).foregroundStyle(RS.text2)
+                    }
+                    if let w = place.wiki, let url = URL(string: w) { Link("GTA Wiki", destination: url).font(.system(size: 13, weight: .semibold)) }
+                    Text("unverified").font(.system(size: 12)).foregroundStyle(RS.text2)
                 }
-                .buttonStyle(RSButtonStyle(kind: .primary))
+                .tint(RS.accentText)
+                HStack(spacing: 10) {
+                    Button(isWp ? "Clear waypoint" : "Set waypoint") {
+                        store.state.waypoint = isWp ? nil : place.id
+                        store.flash(isWp ? "Waypoint cleared" : "Waypoint set")
+                    }
+                    .buttonStyle(RSButtonStyle(kind: .secondary))
+                    Button {
+                        withAnimation(.spring(duration: 0.35, bounce: 0.3)) { _ = store.toggleFound(place.id) }
+                        foundTick += 1
+                        if store.isFound(place.id) { store.flash("Found! \(store.foundCount(cat))/\(data.places(in: cat).count)") }
+                    } label: {
+                        Label(found ? "Not found" : "Mark found", systemImage: found ? "arrow.uturn.backward" : "checkmark")
+                            .contentTransition(.symbolEffect(.replace))
+                    }
+                    .buttonStyle(RSButtonStyle(kind: .primary))
+                }
             }
+            .padding(.horizontal, 20).padding(.top, 26).padding(.bottom, 10)
         }
-        .padding(.horizontal, 20).padding(.top, 26).padding(.bottom, 10)
-        .frame(maxHeight: .infinity, alignment: .top)
         .sensoryFeedback(trigger: foundTick) { _, _ in store.isFound(place.id) ? .success : .impact(weight: .light) }
         .sensoryFeedback(.selection, trigger: store.state.waypoint)
+    }
+
+    private func nearestUnfound(_ data: GameData) -> Place? {
+        data.places(in: place.cat).filter { $0.id != place.id && !store.isFound($0.id) }
+            .min { Route.dist($0.point, place.point) < Route.dist($1.point, place.point) }
     }
 }

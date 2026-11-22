@@ -3,15 +3,14 @@ import SwiftUI
 struct ChecklistView: View {
     @Environment(Store.self) private var store
     @State private var foundTick = 0
+    @State private var order: [String] = []     // sort frozen while you tick, so rows stay under your finger
+    @State private var orderCat = ""
 
     var body: some View {
         let data = store.data!
         let cats = data.checklistCats
         let cat = cats.first { $0.id == store.checklistCat }?.id ?? cats.first!.id
-        let items = data.places(in: cat).sorted {
-            let a = store.isFound($0.id), b = store.isFound($1.id)
-            return a != b ? !a : $0.name.localizedCompare($1.name) == .orderedAscending
-        }
+        let items = orderCat == cat ? order.compactMap { data.placeByID[$0] } : sorted(data, cat)
         let f = store.foundCount(cat), n = items.count
 
         List {
@@ -51,7 +50,7 @@ struct ChecklistView: View {
                 }
                 .rsCard()
                 Text("Swipe right to mark found, left to see it on the map.")
-                    .font(.system(size: 12)).foregroundStyle(RS.text3).padding(.horizontal, 4)
+                    .font(.system(size: 12)).foregroundStyle(RS.text2).padding(.horizontal, 4)
             }
             .plainRow()
 
@@ -69,6 +68,7 @@ struct ChecklistView: View {
                         Spacer()
                         Button("Map") { showOnMap(p) }
                             .font(.system(size: 14, weight: .semibold))
+                            .frame(minWidth: 44, minHeight: 44)
                             .foregroundStyle(RS.accentText)
                             .buttonStyle(.borderless)
                     }
@@ -90,6 +90,21 @@ struct ChecklistView: View {
         .rsStatusBarScrim()
         .contentMargins(.horizontal, 16, for: .scrollContent)
         .sensoryFeedback(trigger: foundTick) { _, _ in .success }
+        .onAppear { freeze(data, cat) }
+        .onChange(of: cat) { _, c in freeze(data, c) }
+    }
+
+    /// Unfound first, then by name. Only re-sorted when the list opens or the category changes.
+    private func sorted(_ data: GameData, _ cat: String) -> [Place] {
+        data.places(in: cat).sorted {
+            let a = store.isFound($0.id), b = store.isFound($1.id)
+            return a != b ? !a : $0.name.localizedCompare($1.name) == .orderedAscending
+        }
+    }
+
+    private func freeze(_ data: GameData, _ cat: String) {
+        order = sorted(data, cat).map(\.id)
+        orderCat = cat
     }
 
     private func toggle(_ p: Place) {

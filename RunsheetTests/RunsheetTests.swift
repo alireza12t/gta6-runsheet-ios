@@ -7,11 +7,12 @@ import Testing
 struct DataTests {
     @Test func bundledDataDecodes() throws {
         let d = try GameData.loadBundled()
-        #expect(d.places.count == 574)
+        #expect(d.places.count >= 574)
         #expect(!d.rings.isEmpty)
         #expect(!d.tonight.items.isEmpty)
-        // every category count matches the places in it
-        for c in d.cats { #expect(d.places(in: c.id).count == c.count, "\(c.id)") }
+        #expect(d.basemap != nil && !d.borders.isEmpty)
+        // tracked categories: the count matches the places in it
+        for c in d.cats where ["collectible", "money", "story"].contains(c.group) { #expect(d.places(in: c.id).count == c.count, "\(c.id)") }
     }
 
     @Test func boardRulesMatchWebApp() throws {

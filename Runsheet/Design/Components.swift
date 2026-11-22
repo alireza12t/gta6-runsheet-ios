@@ -67,7 +67,7 @@ struct RSButtonStyle: ButtonStyle {
             .font(.system(size: 17, weight: .semibold))
             .frame(maxWidth: .infinity, minHeight: 52)
             .foregroundStyle(kind == .primary ? RS.onAccent : RS.text)
-            .background(kind == .primary ? RS.accent : RS.fill2, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .background(kind == .primary ? RS.accentFill : RS.fill2, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
             .opacity(enabled ? 1 : 0.45)
             .scaleEffect(configuration.isPressed ? 0.97 : 1)
             .animation(.spring(duration: 0.25, bounce: 0.4), value: configuration.isPressed)
@@ -156,11 +156,12 @@ struct SegPicker<T: Hashable>: View {
                     }
                     .monospacedDigit()
                     .foregroundStyle(RS.text)
-                    .frame(maxWidth: .infinity, minHeight: 34)
+                    .frame(maxWidth: .infinity, minHeight: 36)
+                    .contentShape(Rectangle())
                     .background {
                         if on {
                             RoundedRectangle(cornerRadius: 9, style: .continuous)
-                                .fill(RS.card)
+                                .fill(RS.segOn)
                                 .shadow(color: .black.opacity(0.12), radius: 3, y: 1)
                                 .matchedGeometryEffect(id: "pill", in: ns)
                         }
@@ -192,7 +193,7 @@ struct Chip: View {
             HStack(spacing: 6) {
                 if let color { Circle().fill(color).frame(width: 9, height: 9) }
                 Text(title).font(.system(size: 14, weight: .medium)).lineLimit(1)
-                if let count { Text(count).font(.mono(12)).foregroundStyle(on ? RS.text : RS.text2).opacity(0.75) }
+                if let count { Text(count).font(.mono(12)).foregroundStyle(RS.text.opacity(0.7)) }
             }
             .foregroundStyle(RS.text)
             .padding(.horizontal, 12).frame(height: 34)

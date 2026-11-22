@@ -86,7 +86,7 @@ struct PlanView: View {
                 .sensoryFeedback(.impact(weight: .medium), trigger: store.showRun) { _, new in new }
 
                 Text("Run size is a first guess (stops, not minutes) until we time real drives. Board entries come from guides; \"src\" shows how many agree. Not affiliated with Rockstar Games or Take-Two.")
-                    .font(.system(size: 12)).foregroundStyle(RS.text3)
+                    .font(.system(size: 12)).foregroundStyle(RS.text2)
                     .padding(.horizontal, 4).padding(.bottom, 20)
             }
             .padding(.horizontal, 16)
@@ -104,11 +104,11 @@ struct PlanView: View {
                 Text("RUNSHEET · UNOFFICIAL GTA VI GUIDE").font(.system(size: 11, weight: .semibold)).kerning(0.6).foregroundStyle(RS.text2)
                     .lineLimit(1).minimumScaleFactor(0.8)
                 Spacer()
-                GlassIconButton(symbol: store.state.theme.symbol, label: "Theme: \(store.state.theme.rawValue). Tap to change", size: 38) {
+                GlassIconButton(symbol: store.state.theme.symbol, label: "Theme: \(store.state.theme.rawValue). Tap to change", size: 44) {
                     withAnimation { store.state.theme = store.state.theme.next }
                 }
                 .contentTransition(.symbolEffect(.replace))
-                GlassIconButton(symbol: "info", label: "About Runsheet", size: 38) { showAbout = true }
+                GlassIconButton(symbol: "info", label: "About Runsheet", size: 44) { showAbout = true }
             }
             Text("Plan your session").font(.system(size: 32, weight: .bold)).foregroundStyle(RS.text)
         }
@@ -153,7 +153,7 @@ struct PlanView: View {
     private func stepButton(_ symbol: String, _ label: String, action: @escaping () -> Void) -> some View {
         Button { withAnimation(.spring(duration: 0.3)) { action() } } label: {
             Image(systemName: symbol).font(.system(size: 14, weight: .bold)).foregroundStyle(RS.text)
-                .frame(width: 40, height: 38).contentShape(Rectangle())
+                .frame(width: 44, height: 44).contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .accessibilityLabel(label)

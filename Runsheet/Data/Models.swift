@@ -27,10 +27,15 @@ struct Place: Codable, Identifiable, Hashable, Sendable {
     let source: String?
     let sources: Int?
     let license: String?
+    let desc: String?
+    let near: String?
+    let slug: String?
+    let wiki: String?
 }
 
 struct PlacesFile: Codable, Sendable {
     let source: String?
+    let catHelp: [String: String]?
     let cats: [Category]
     let regions: [Region]
     let places: [Place]
@@ -123,6 +128,27 @@ struct OutlineFile: Codable, Sendable {
     }
 }
 
+/// Our own borders and labels on top of the map art, plus where the art tiles exist.
+struct BasemapFile: Codable, Sendable {
+    struct Tiles: Codable, Sendable {
+        let minNativeZoom: Int
+        let maxNativeZoom: Int
+        let sea: String?
+        let credit: String?
+        let have: [String: String]?
+    }
+    struct Feature: Codable, Sendable {
+        struct Props: Codable, Sendable { let k: String?; let name: String? }
+        struct Geometry: Codable, Sendable { let type: String; let coordinates: [[Double]] }
+        let properties: Props?
+        let geometry: Geometry
+    }
+    struct Label: Codable, Sendable { let t: String; let k: String; let x: Double; let y: Double }
+    let tiles: Tiles
+    let features: [Feature]
+    let labels: [Label]
+}
+
 struct GameData: Sendable {
     let source: String?
     let cats: [Category]
@@ -132,11 +158,22 @@ struct GameData: Sendable {
     let tonight: TonightFile
     let money: MoneyFile
     let rings: [[CGPoint]]
+    let catHelp: [String: String]
+    let basemap: BasemapFile?
+    let borders: [[CGPoint]]
+    let tileHave: [Int: Set<String>]
 
     let placesByCat: [String: [Place]]
     let placeByID: [String: Place]
 
-    init(places p: PlacesFile, guide: GuideFile, tonight: TonightFile, money: MoneyFile, outline: OutlineFile) {
+    init(places p: PlacesFile, guide: GuideFile, tonight: TonightFile, money: MoneyFile, outline: OutlineFile, basemap: BasemapFile? = nil) {
+        catHelp = p.catHelp ?? [:]
+        self.basemap = basemap
+        borders = (basemap?.features ?? []).filter { $0.properties?.k == "area" && $0.geometry.type == "LineString" }
+            .map { $0.geometry.coordinates.compactMap { $0.count >= 2 ? CGPoint(x: $0[0], y: $0[1]) : nil } }
+        var have: [Int: Set<String>] = [:]
+        for (z, list) in basemap?.tiles.have ?? [:] { if let zi = Int(z) { have[zi] = Set(list.split(separator: " ").map(String.init)) } }
+        tileHave = have
         source = p.source
         cats = p.cats
         regions = p.regions
@@ -161,7 +198,8 @@ struct GameData: Sendable {
             guide: try read("guide", as: GuideFile.self),
             tonight: try read("tonight", as: TonightFile.self),
             money: try read("money", as: MoneyFile.self),
-            outline: try read("outline", as: OutlineFile.self))
+            outline: try read("outline", as: OutlineFile.self),
+            basemap: try? read("basemap", as: BasemapFile.self))
     }
 
     func catName(_ id: String) -> String { cats.first { $0.id == id }?.name ?? id }
@@ -176,4 +214,15 @@ struct GameData: Sendable {
 
 extension Place {
     var point: CGPoint { CGPoint(x: x, y: y) }
+    /// "Near Crosstown, Vice City", or the area, or nothing.
+    var whereText: String {
+        let nearText = (near ?? "").replacingOccurrences(of: "Near ", with: "")
+        var parts: [String] = []
+        if let area, !area.isEmpty, !nearText.contains(area) { parts.append(area) }
+        if !nearText.isEmpty { parts.append(nearText) }
+        return parts.joined(separator: " · ")
+    }
 }
+
+/// The map art is 2560 x 3313, and positions are shares of it, so y is stretched by this much.
+let mapAspect: CGFloat = 3313.0 / 2560.0

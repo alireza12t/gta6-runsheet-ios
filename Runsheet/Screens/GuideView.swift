@@ -39,7 +39,7 @@ struct GuideView: View {
             }
 
             Text("Unofficial fan guide. Not affiliated with Rockstar Games or Take-Two Interactive.")
-                .font(.system(size: 12)).foregroundStyle(RS.text3).plainRow()
+                .font(.system(size: 12)).foregroundStyle(RS.text2).plainRow()
         }
         .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)

@@ -17,10 +17,12 @@
 		3B7C90EEBDF38E8FC0E6D3AA /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E535348266FECA1C67AE336A /* LoadingView.swift */; };
 		43E4C7913D5F8BAEA68921C7 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 485161C5BE91DC40F90590D4 /* RootView.swift */; };
 		4D6270BB92869E95B9A18E8A /* guide.json in Resources */ = {isa = PBXBuildFile; fileRef = 0B37F301592F2C07ABEDCC68 /* guide.json */; };
+		4E49D752EACDD82D906AD4FE /* tiles in Resources */ = {isa = PBXBuildFile; fileRef = FC17D0D1467831B52901480D /* tiles */; };
 		50F1AEFA4A3F949982D12504 /* RunActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7221EF5B76DF5BC8D699DE /* RunActivityAttributes.swift */; };
 		651425F25E9E9A90D0A98E70 /* LeonidaMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AECA412D6D5446F19B118DB /* LeonidaMap.swift */; };
 		6674A0DAAB56610F9D717594 /* GuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE469BC3A8476722E036038B /* GuideView.swift */; };
 		66CEC56EFB94A4D5F8AC5E2C /* RunsheetWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 29A6E32B6B6A908D9DBCB701 /* RunsheetWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		709235C21DCFF57C5939A68F /* basemap.json in Resources */ = {isa = PBXBuildFile; fileRef = C62AB3DB25F63A03A2D09AB7 /* basemap.json */; };
 		8604466C86C0C3A4FCADA95C /* RunsheetApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B2426FB2822FC80B37791F3 /* RunsheetApp.swift */; };
 		8634D5591AE7D75D0FC6B549 /* money.json in Resources */ = {isa = PBXBuildFile; fileRef = 24D59161A5F574A53D7E2D41 /* money.json */; };
 		8A58ECD1C18030CFC6922D5B /* MapScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11E98EDE12085C452EDD7A4 /* MapScreen.swift */; };
@@ -94,6 +96,7 @@
 		AEFEA5440EEE21CEB251DE90 /* LiveRun.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveRun.swift; sourceTree = "<group>"; };
 		B64FFEE69935AEB9086C35C9 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		BE469BC3A8476722E036038B /* GuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideView.swift; sourceTree = "<group>"; };
+		C62AB3DB25F63A03A2D09AB7 /* basemap.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = basemap.json; sourceTree = "<group>"; };
 		C9A49278A4EF3CB090EDDB1A /* ChecklistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChecklistView.swift; sourceTree = "<group>"; };
 		CB3618E3869B69CD7D574946 /* RunsheetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunsheetTests.swift; sourceTree = "<group>"; };
 		D428B707FCA0CFFE1990AEBF /* outline.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = outline.json; sourceTree = "<group>"; };
@@ -101,6 +104,7 @@
 		E9F573379C803248B0FC103A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EE219F87D5307F23C6002B27 /* RunsheetTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = RunsheetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F11E98EDE12085C452EDD7A4 /* MapScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapScreen.swift; sourceTree = "<group>"; };
+		FC17D0D1467831B52901480D /* tiles */ = {isa = PBXFileReference; lastKnownFileType = folder; name = tiles; path = Tiles/tiles; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -116,6 +120,14 @@
 				0004E1950B04C834FC1859F4 /* RunView.swift */,
 			);
 			path = Screens;
+			sourceTree = "<group>";
+		};
+		146CB6B5D6226045B127044A /* Tiles */ = {
+			isa = PBXGroup;
+			children = (
+				FC17D0D1467831B52901480D /* tiles */,
+			);
+			path = Tiles;
 			sourceTree = "<group>";
 		};
 		35BAA124807846BC32C055A2 /* Data */ = {
@@ -172,6 +184,7 @@
 				5755842D846122E7CD5507B4 /* RunsheetTests */,
 				88554E8D5AD980921EBF9FE3 /* RunsheetWidgets */,
 				9FC87CB07A8938C7B2CC057E /* Shared */,
+				146CB6B5D6226045B127044A /* Tiles */,
 				3E7FD27BC8CB46A7FCC18348 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -194,6 +207,7 @@
 			isa = PBXGroup;
 			children = (
 				E9F573379C803248B0FC103A /* Assets.xcassets */,
+				C62AB3DB25F63A03A2D09AB7 /* basemap.json */,
 				0B37F301592F2C07ABEDCC68 /* guide.json */,
 				24D59161A5F574A53D7E2D41 /* money.json */,
 				D428B707FCA0CFFE1990AEBF /* outline.json */,
@@ -304,6 +318,14 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					50C939DF9D4B1F302B824AA5 = {
+						DevelopmentTeam = 58WM5RF23G;
+						ProvisioningStyle = Automatic;
+					};
+					E1475D7C77B3222B4CDF116A = {
+						DevelopmentTeam = 58WM5RF23G;
+						ProvisioningStyle = Automatic;
+					};
 				};
 			};
 			buildConfigurationList = EBD5587D0653A6CEC7BC708E /* Build configuration list for PBXProject "Runsheet" */;
@@ -333,10 +355,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				D17609D50B8C3B6E134ACF34 /* Assets.xcassets in Resources */,
+				709235C21DCFF57C5939A68F /* basemap.json in Resources */,
 				4D6270BB92869E95B9A18E8A /* guide.json in Resources */,
 				8634D5591AE7D75D0FC6B549 /* money.json in Resources */,
 				DE982E45D17C5F48817F3348 /* outline.json in Resources */,
 				A76F8CEB813750D17AFABEDD /* places.json in Resources */,
+				4E49D752EACDD82D906AD4FE /* tiles in Resources */,
 				A31AFED7F30C1A6607405A36 /* tonight.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -406,6 +430,8 @@
 		23F8F39506CB165E5688B6F0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 58WM5RF23G;
 				INFOPLIST_FILE = RunsheetWidgets/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -425,6 +451,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 58WM5RF23G;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Runsheet;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.reference";
@@ -530,6 +558,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 58WM5RF23G;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Runsheet;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.reference";
@@ -608,6 +638,8 @@
 		DE82F29D62B70B0246418272 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 58WM5RF23G;
 				INFOPLIST_FILE = RunsheetWidgets/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

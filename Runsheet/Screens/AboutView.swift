@@ -35,7 +35,7 @@ struct AboutView: View {
                     Text("Map locations come from gta6tracker.org, which builds on the GTA Wiki (CC BY-SA). They are marked unverified, and each entry shows how many sources agree.")
                     Link(destination: URL(string: "https://gta6tracker.org")!) { Label("gta6tracker.org", systemImage: "safari") }
                     Text("Plan board items, missions, cheats and money tips are hand-written from guide summaries. No payout numbers are shown, because none are confirmed.")
-                    Text("The map is our own schematic outline, not Rockstar's map.")
+                    Text("Map art © Rockstar Games, via the GTA Wiki. Area borders and labels on top are our own and approximate.")
                 }
                 Section("Your data") {
                     Label("Everything stays on this iPhone. No account, no server, no tracking.", systemImage: "lock.iphone")
@@ -59,7 +59,7 @@ struct AboutView: View {
                     Text("App code is MIT licensed. The loading animation is adapted from gta6-countdown by the same author.")
                 }
                 Section {
-                    Text("Not affiliated with Rockstar Games or Take-Two Interactive. Grand Theft Auto and GTA are their trademarks. This is a fan-made guide with no Rockstar art, logos or fonts.")
+                    Text("Not affiliated with Rockstar Games or Take-Two Interactive. Grand Theft Auto and GTA are their trademarks. This is a fan-made guide. The map art belongs to Rockstar Games; no Rockstar logos or fonts are used.")
                         .font(.system(size: 13)).foregroundStyle(RS.text2)
                 }
             }

@@ -61,6 +61,9 @@ struct RunPlan: Codable, Hashable, Sendable {
     var title: String
     var stops: [RunStop]
     var idx = 0
+    var skipped: Int? = 0     // optional so runs saved before 1.0.0's update still load
+
+    var done: Int { max(0, min(idx, stops.count) - (skipped ?? 0)) }
 
     var total: Int { stops.count }
     var isComplete: Bool { idx >= stops.count }

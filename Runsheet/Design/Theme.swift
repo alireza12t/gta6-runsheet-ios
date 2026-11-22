@@ -14,6 +14,10 @@ enum RS {
     static let accent = dyn(0xE8590C, 0xFF6B1A)
     static let accentText = dyn(0xC2410C, 0xFF9A5C)
     static let onAccent = dyn(0xFFFFFF, 0x1C0A00)
+    /// Selected option in segmented controls; the dark card colour was nearly invisible on the track.
+    static let segOn = dyn(0xFFFFFF, 0x636366)
+    /// Deeper orange for filled buttons in light mode, so white text passes contrast.
+    static let accentFill = dyn(0xC2410C, 0xFF6B1A)
 
     static let blue = dyn(0x0A60C9, 0x6AB0FF)
     static let blueBg = dyn(0xE8F1FC, 0x0A84FF, darkAlpha: 0.18)

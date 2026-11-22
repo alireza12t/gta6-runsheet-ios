@@ -1,6 +1,6 @@
 # Runsheet for iPhone
 
-An unofficial GTA VI companion, built natively in SwiftUI. Plan a session from your chapter, character, in-game time and how long you can play, find what's left on a map of 574 places, and run it stop by stop with a Live Activity on your lock screen.
+An unofficial GTA VI companion, built natively in SwiftUI. Plan a session from your chapter, character, in-game time and how long you can play, find what's left on a map of 1,342 places, and run it stop by stop with a Live Activity on your lock screen.
 
 It's the native version of the Runsheet web app. All your progress stays on your iPhone. No account, no server.
 
@@ -9,7 +9,7 @@ It's the native version of the Runsheet web app. All your progress stays on your
 
 Made by **Alireza Toghiani**.
 
-> Not affiliated with Rockstar Games or Take-Two Interactive. This is a fan-made guide with no Rockstar art, logos or fonts.
+> Not affiliated with Rockstar Games or Take-Two Interactive. Fan-made guide. Map art © Rockstar Games, via the GTA Wiki. No Rockstar logos or fonts.
 
 | Plan | Live board | Map | Place |
 |---|---|---|---|
@@ -33,8 +33,8 @@ Loading screen:
 
 ## What it does
 - **Plan.** Pick chapter, Jason or Lucia, day or night, and 20 to 90 minutes. The live board shows what's open right now, like a departure board: blue is live now, amber is closing, green is ready, grey is money. Each line shows how many sources agree.
-- **Run.** A route through the nearest unfound places (nearest neighbour, then 2-opt), drawn on the map as it starts. Done and Skip move you along, with haptics. The Live Activity and Dynamic Island show the next stop and a progress line.
-- **Map.** Our own zoomable map of Leonida, drawn with SwiftUI Canvas. Pinch, pan, double tap. Pins are coloured by category. Filter, search, set a waypoint, mark found, or route whatever is on screen.
+- **Run.** A route through the nearest unfound places (nearest neighbour, then 2-opt, measured at true map scale), drawn on the map as it starts. The finish card counts done and skipped stops. Done and Skip move you along, with haptics. The Live Activity and Dynamic Island show the next stop and a progress line.
+- **Map.** The game's map art as tiles, with our own area borders and labels on top, drawn with SwiftUI Canvas. Pinch, pan, double tap. Close pins group into numbered bubbles when zoomed out. Tap a pin for details, the next nearest unfound spot, waypoint and mark found, or route whatever is on screen (up to 60 stops).
 - **Guide.** Collectible progress, missions by chapter, Strangers & Freaks, money rules and ways to earn, cheats and trophies.
 - **Checklist.** Every collectible and money spot by category. Swipe right to mark found, swipe left to see it on the map.
 
@@ -69,14 +69,15 @@ xcodebuild test -project Runsheet.xcodeproj -scheme Runsheet -destination 'platf
 | `Runsheet/Loading` | The launch animation |
 | `RunsheetWidgets` | The Live Activity and Dynamic Island |
 | `Shared` | The Live Activity attributes, used by both targets |
-| `Runsheet/Resources` | `places.json`, `guide.json`, `tonight.json`, `money.json`, `outline.json` |
+| `Runsheet/Resources` | `places.json`, `basemap.json` (borders, labels, which tiles exist), `guide.json`, `tonight.json`, `money.json`, `outline.json` |
+| `Tiles/tiles` | Map art tiles, zoom -2 to 4, same files as the web app |
 
 Progress is a single JSON file in Application Support. If it can't be read, the app moves it aside and starts fresh. It never deletes it.
 
 ## Credits
 - **Map locations** come from [gta6tracker.org](https://gta6tracker.org), which builds on the GTA Wiki (CC BY-SA). They're marked unverified in the app, exactly as the data says. The location data keeps its CC BY-SA terms.
 - **Plan items, missions, cheats and money tips** are hand-written from guide summaries. No payout numbers are shown, because none are confirmed.
-- **The map outline** is our own schematic drawing, not Rockstar's map.
+- **Map art** © Rockstar Games, via the GTA Wiki. It's in this repo for the fan app and the web version only, which also means this app can't go on the App Store as is. Area borders and labels are our own and approximate.
 - **The loading animation** is adapted from [gta6-countdown](https://github.com/alireza12t/gta6-countdown) (MIT). It traces the Leonida outline instead of the game's logo.
 - Design inspired by Flighty's departure-board layout. No Flighty assets are used.
 

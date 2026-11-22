@@ -164,6 +164,7 @@ final class Store {
             if cur.kind == .place { state.found[cur.id] = Date() }
             else if cur.id != "cash" && !cur.repeatable { state.done[cur.id] = Date() }
         }
+        if !markDone { run.skipped = (run.skipped ?? 0) + 1 }
         run.idx += 1
         state.run = run
     }

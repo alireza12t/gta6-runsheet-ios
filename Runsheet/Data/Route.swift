@@ -4,7 +4,8 @@ import CoreGraphics
 /// Straight-line map distance only. It suggests an order, not a drive time.
 /// Ported from the web app's route.js.
 enum Route {
-    static func dist(_ a: CGPoint, _ b: CGPoint) -> Double { Double(hypot(a.x - b.x, a.y - b.y)) }
+    /// True-scale distance: y is scaled by the map image's aspect (3313 / 2560), as in route.js.
+    static func dist(_ a: CGPoint, _ b: CGPoint) -> Double { Double(hypot(a.x - b.x, (a.y - b.y) * mapAspect)) }
 
     static func tour<T>(_ items: [T], start: CGPoint?, point: (T) -> CGPoint) -> [T] {
         guard !items.isEmpty else { return [] }
