@@ -1,0 +1,73 @@
+name: Runsheet
+options:
+  bundleIdPrefix: com.alirezatoghiani
+  deploymentTarget:
+    iOS: "18.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: 1.0.0
+    CURRENT_PROJECT_VERSION: 1
+    SWIFT_STRICT_CONCURRENCY: complete
+targets:
+  Runsheet:
+    type: application
+    platform: iOS
+    sources:
+      - path: Runsheet
+      - path: Shared
+    dependencies:
+      - target: RunsheetWidgets
+        embed: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.alirezatoghiani.runsheet
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Runsheet
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+        INFOPLIST_KEY_NSSupportsLiveActivities: YES
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.reference
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        TARGETED_DEVICE_FAMILY: "1"
+  RunsheetWidgets:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: RunsheetWidgets
+      - path: Shared
+    info:
+      path: RunsheetWidgets/Info.plist
+      properties:
+        CFBundleDisplayName: Runsheet
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.alirezatoghiani.runsheet.widgets
+        TARGETED_DEVICE_FAMILY: "1"
+        SKIP_INSTALL: YES
+  RunsheetTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [RunsheetTests]
+    dependencies:
+      - target: Runsheet
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.alirezatoghiani.runsheet.tests
+        BUNDLE_LOADER: $(TEST_HOST)
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/Runsheet.app/Runsheet
+schemes:
+  Runsheet:
+    build:
+      targets:
+        Runsheet: all
+        RunsheetTests: [test]
+    test:
+      targets: [RunsheetTests]

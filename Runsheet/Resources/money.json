@@ -1,0 +1,68 @@
+{
+ "_note": "Hand-written 2026-11-22. No payout numbers: none are confirmed yet.",
+ "rules": [
+  {
+   "text": "You can carry up to $20,000 in cash.",
+   "sources": 1
+  },
+  {
+   "text": "Carried cash is lost if you're busted or wasted, so bank it after every job.",
+   "sources": 1
+  },
+  {
+   "text": "The $250,000 cheat unlocks when you finish the story.",
+   "sources": 2
+  }
+ ],
+ "methods": [
+  {
+   "name": "Store hold-ups",
+   "when": "From the start",
+   "note": "Fast, small payouts.",
+   "sources": 1,
+   "cat": null
+  },
+  {
+   "name": "Safes",
+   "when": "Where you find them",
+   "note": "40 safes on the map.",
+   "sources": 1,
+   "cat": "safe"
+  },
+  {
+   "name": "Towable ATMs",
+   "when": "Where you find them",
+   "note": "Tow the whole machine.",
+   "sources": 1,
+   "cat": "atm-towable"
+  },
+  {
+   "name": "Smash 'n' Grab",
+   "when": "Jewellery and pawn shops",
+   "note": "Grab and run.",
+   "sources": 1,
+   "cat": null
+  },
+  {
+   "name": "Payday Loans and banks",
+   "when": "Where you find them",
+   "note": "7 Payday Loans spots on the map.",
+   "sources": 1,
+   "cat": "payday-loans"
+  },
+  {
+   "name": "Steal and sell cars",
+   "when": "Any time",
+   "note": "Sell to fences or deliver for Moses.",
+   "sources": 1,
+   "cat": null
+  },
+  {
+   "name": "Story missions",
+   "when": "As you play",
+   "note": "Big chunks of cash.",
+   "sources": 1,
+   "cat": null
+  }
+ ]
+}

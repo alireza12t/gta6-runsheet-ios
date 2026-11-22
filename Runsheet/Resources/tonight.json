@@ -1,0 +1,125 @@
+{
+ "_note": "Hand-written from guide summaries read 2026-11-22. Only what they state. sources = guides seen saying it; not yet checked against the full pages.",
+ "items": [
+  {
+   "id": "mangrove",
+   "name": "Mr. Mangrove",
+   "kind": "side",
+   "ch": [
+    1
+   ],
+   "who": "Lucia",
+   "time": "night",
+   "missable": false,
+   "note": "Kirk's questline. Lucia only, night only.",
+   "sources": 1
+  },
+  {
+   "id": "shirley",
+   "name": "Shirley's errands",
+   "kind": "side",
+   "ch": [
+    1
+   ],
+   "who": "any",
+   "time": "any",
+   "missable": true,
+   "closes": "after Tourist Trap",
+   "note": "Doesn't count for the Strangers & Freaks trophy.",
+   "sources": 1
+  },
+  {
+   "id": "skunkape",
+   "name": "Kirk's Skunk Ape hunt",
+   "kind": "side",
+   "ch": [
+    1
+   ],
+   "who": "any",
+   "time": "any",
+   "missable": false,
+   "note": "Counts toward the Strangers & Freaks trophy.",
+   "sources": 1
+  },
+  {
+   "id": "kyle",
+   "name": "Kyle's crop-duster jobs",
+   "kind": "side",
+   "ch": [
+    2
+   ],
+   "who": "any",
+   "time": "any",
+   "missable": false,
+   "note": "Counts toward the Strangers & Freaks trophy.",
+   "sources": 1
+  },
+  {
+   "id": "bret",
+   "name": "Bret Vogel's hunt",
+   "kind": "side",
+   "ch": [
+    2
+   ],
+   "who": "Jason",
+   "time": "any",
+   "missable": false,
+   "note": "Jason only. Unlocks the Fair Game trophy.",
+   "sources": 1
+  },
+  {
+   "id": "moses",
+   "name": "Moses' car deliveries",
+   "kind": "money",
+   "ch": [
+    2
+   ],
+   "who": "any",
+   "time": "any",
+   "missable": false,
+   "note": "Repeatable car thefts in Port Gellhorn. Good early money.",
+   "sources": 1,
+   "repeatable": true
+  },
+  {
+   "id": "yago",
+   "name": "Race Against Yago",
+   "kind": "side",
+   "ch": [
+    3
+   ],
+   "who": "Jason",
+   "time": "any",
+   "missable": true,
+   "closes": "if you leave it",
+   "note": "Timed. Save before you start.",
+   "sources": 1
+  },
+  {
+   "id": "andy",
+   "name": "Andy's Cellerichain jobs",
+   "kind": "side",
+   "ch": [
+    3
+   ],
+   "who": "Lucia",
+   "time": "any",
+   "missable": false,
+   "note": "Lucia only, per one guide.",
+   "sources": 1
+  },
+  {
+   "id": "pete",
+   "name": "Pilot Pete's flights",
+   "kind": "side",
+   "ch": [
+    4
+   ],
+   "who": "any",
+   "time": "any",
+   "missable": false,
+   "note": "Counts toward the Strangers & Freaks trophy.",
+   "sources": 1
+  }
+ ]
+}
